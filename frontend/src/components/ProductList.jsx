@@ -82,11 +82,11 @@ export default function ProductList(){
           {total>0 && (
             view === "grid" ? (
               <div className="grid grid-3">
-                {pageItems.map(p => <ProductCard key={p._id} p={p} onAdd={addToCart} />)}
+                {pageItems.map(p => <ProductCard key={p._id} p={p} onAdd={addToCart} view="grid" />)}
               </div>
             ) : (
               <div className="stack">
-                {pageItems.map(p => <ProductCard key={p._id} p={p} onAdd={addToCart} />)}
+                {pageItems.map(p => <ProductCard key={p._id} p={p} onAdd={addToCart} view="list" />)}
               </div>
             )
           )}

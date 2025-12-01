@@ -1,7 +1,7 @@
 body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 0; }
 .container { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
 .nav { display:flex; gap:12px; padding:12px 0; align-items:center; }
-.card { border: 1px solid #ddd; padding:12px; border-radius:8px; margin-bottom:12px; }
+.card { border: 1px solid #ddd; padding:16px; border-radius:10px; margin-bottom:16px; }
 .btn { padding:8px 12px; border:none; border-radius:6px; cursor:pointer; }
 .btn-primary { background:#2563eb; color:white; }
 .btn-danger { background:#ef4444; color:white; }
@@ -40,7 +40,7 @@ p { margin: 0 0 0.75rem; color: var(--muted); }
 .nav a:hover { color: var(--primary); }
 
 /* Grid utilities */
-.grid { display: grid; gap: 16px; }
+.grid { display: grid; gap: 20px; }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -81,13 +81,16 @@ input:focus, textarea:focus, select:focus {
 
 /* Product */
 .product-card { display:flex; gap:16px; justify-content:space-between; align-items:flex-start; }
+.product-card.grid { flex-direction: column; align-items: stretch; }
+.product-card.list { flex-direction: row; }
+/* (removed) product-thumb sizing, no images used now */
 .price { font-weight: 700; color: var(--primary); }
 .badge { display:inline-block; padding:2px 8px; border-radius:999px; background:#f3f4f6; font-size:12px; }
 .badge-green { background: #dcfce7; color: #166534; }
 .badge-red { background: #fee2e2; color: #991b1b; }
 
 /* Layout helpers */
-.stack { display:flex; flex-direction:column; gap:12px; }
+.stack { display:flex; flex-direction:column; gap:16px; }
 .row { display:flex; gap:8px; align-items:center; }
 .sp-between { justify-content: space-between; }
 .mt-2 { margin-top: 8px; }
