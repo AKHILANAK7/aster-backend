@@ -1,45 +1,41 @@
-import React from 'react';
-import { useCart } from '../context/CartContext';
+import React, {useContext} from "react";
+import { CartContext } from "../context/CartContext";
 
-const Cart = () => {
-    const { cart, removeFromCart, clearCart } = useCart();
+export default function Cart(){
+  const { items, clearCart } = useContext(CartContext);
+  const total = items.reduce((s, it) => s + (it.price||0), 0);
 
-    const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
-    if (cart.length === 0) {
-        return (
-            <div className="container" style={{ textAlign: 'center', marginTop: '4rem' }}>
-                <h2>Your cart is empty</h2>
-            </div>
-        );
-    }
-
-    return (
-        <div className="container">
-            <h1 style={{ marginBottom: '2rem' }}>Your Cart</h1>
-            <div className="glass-panel" style={{ padding: '2rem' }}>
-                {cart.map((item) => (
-                    <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        <div>
-                            <h3>{item.name}</h3>
-                            <p style={{ color: '#aaa' }}>Quantity: {item.quantity}</p>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                            <span style={{ fontSize: '1.2rem' }}>₹{item.price * item.quantity}</span>
-                            <button onClick={() => removeFromCart(item._id)} style={{ color: '#ff7675', background: 'none' }}>Remove</button>
-                        </div>
-                    </div>
-                ))}
-                <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2>Total: ₹{total}</h2>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                        <button onClick={clearCart} className="btn" style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>Clear Cart</button>
-                        <button className="btn btn-primary">Checkout</button>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="stack">
+      <h2>Your Cart</h2>
+      {items.length === 0 ? (
+        <div className="card">
+          <p className="muted">Your cart is empty.</p>
         </div>
-    );
-};
-
-export default Cart;
+      ) : (
+        <>
+          <div className="stack">
+            {items.map((i, idx) => (
+              <div key={idx} className="card">
+                <div className="card-header">
+                  <div style={{fontWeight:600}}>{i.name}</div>
+                  <div className="price">₹{i.price}</div>
+                </div>
+                {i.description && <p className="muted">{i.description}</p>}
+              </div>
+            ))}
+          </div>
+          <div className="card">
+            <div className="row sp-between">
+              <div><strong>Total</strong>: <span className="price">₹{total}</span></div>
+              <div className="row" style={{gap:8}}>
+                <button className="btn btn-outline" onClick={clearCart}>Clear</button>
+                <button className="btn btn-primary" onClick={()=>alert("Checkout not implemented")}>Checkout</button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

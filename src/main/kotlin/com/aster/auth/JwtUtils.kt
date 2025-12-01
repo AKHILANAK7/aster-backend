@@ -9,12 +9,17 @@ import io.vertx.core.json.JsonObject
 object JwtUtils {
 
     fun createProvider(vertx: Vertx): JWTAuth {
-        return JWTAuth.create(vertx, JWTAuthOptions(
-            JsonObject().put("keyStore", JsonObject()
-                .put("path", "keystore.jceks")
-                .put("type", "jceks")
-                .put("password", "secret"))
-        ))
+        return JWTAuth.create(
+            vertx,
+            JWTAuthOptions(
+                JsonObject()
+                    .put("keyStore", JsonObject()
+                        .put("path", "keystore.jceks")
+                        .put("type", "jceks")
+                        .put("password", "secret")
+                    )
+            )
+        )
     }
 
     fun generateToken(provider: JWTAuth, email: String, role: String): String {
@@ -22,8 +27,7 @@ object JwtUtils {
             JsonObject()
                 .put("email", email)
                 .put("role", role),
-            JWTOptions()
+            JWTOptions().setAlgorithm("RS256")
         )
     }
 }
-

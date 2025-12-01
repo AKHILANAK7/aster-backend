@@ -1,77 +1,35 @@
-import React, { useState } from 'react';
-import { createProduct } from '../api';
+import React, {useState} from "react";
+import api, { setAuthToken } from "../api";
 
-const ProductForm = ({ onProductCreated }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        price: '',
-        stock: '',
-        description: ''
-    });
-    const [error, setError] = useState('');
+export default function ProductForm({onCreated}) {
+  const [name,setName]=useState("");
+  const [price,setPrice]=useState("");
+  const [stock,setStock]=useState("");
+  const [desc,setDesc]=useState("");
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  const submit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      if (token) api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      const body = { name, price: parseFloat(price), stock: parseInt(stock), description: desc };
+      const res = await api.post("/api/products", body);
+      onCreated && onCreated(res.data);
+      alert("Product created");
+      setName(""); setPrice(""); setStock(""); setDesc("");
+    } catch (err) {
+      console.error(err);
+      alert("Create failed: " + (err.response?.data || err.message));
+    }
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const token = localStorage.getItem('token');
-            await createProduct({
-                ...formData,
-                price: parseFloat(formData.price),
-                stock: parseInt(formData.stock)
-            }, token);
-            setFormData({ name: '', price: '', stock: '', description: '' });
-            if (onProductCreated) onProductCreated();
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className="glass-panel" style={{ padding: '2rem', maxWidth: '500px', margin: '0 auto' }}>
-            <h2>Add New Product</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <input
-                type="text"
-                name="name"
-                placeholder="Product Name"
-                value={formData.name}
-                onChange={handleChange}
-                className="input-field"
-                required
-            />
-            <input
-                type="number"
-                name="price"
-                placeholder="Price"
-                value={formData.price}
-                onChange={handleChange}
-                className="input-field"
-                required
-            />
-            <input
-                type="number"
-                name="stock"
-                placeholder="Stock"
-                value={formData.stock}
-                onChange={handleChange}
-                className="input-field"
-                required
-            />
-            <textarea
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleChange}
-                className="input-field"
-                rows="4"
-            />
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Create Product</button>
-        </form>
-    );
-};
-
-export default ProductForm;
+  return (
+    <form onSubmit={submit} className="card">
+      <div className="form-row"><label>Name</label><input value={name} onChange={e=>setName(e.target.value)} required /></div>
+      <div className="form-row"><label>Price</label><input value={price} onChange={e=>setPrice(e.target.value)} required /></div>
+      <div className="form-row"><label>Stock</label><input value={stock} onChange={e=>setStock(e.target.value)} required /></div>
+      <div className="form-row"><label>Description</label><textarea value={desc} onChange={e=>setDesc(e.target.value)} /></div>
+      <button className="btn btn-primary" type="submit">Create Product</button>
+    </form>
+  );
+}

@@ -1,80 +1,43 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { login, register } from '../api';
+import React, {useState} from "react";
+import api, { setAuthToken } from "../api";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-    const [isLogin, setIsLogin] = useState(true);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+export default function Login(){
+  const [email,setEmail] = useState("");
+  const [pw,setPw] = useState("");
+  const nav = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        try {
-            let data;
-            if (isLogin) {
-                data = await login(username, password);
-            } else {
-                data = await register(username, password);
-                // Auto login after register
-                if (data) {
-                    data = await login(username, password);
-                }
-            }
+  const submit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.post("/api/auth/login", { email, password: pw });
+      const token = res.data.token;
+      localStorage.setItem("token", token);
+      setAuthToken(token);
+      alert("Logged in");
+      nav("/admin");
+    } catch (err) {
+      console.error(err);
+      alert("Login failed: " + (err.response?.data || err.message));
+    }
+  };
 
-            if (data && data.token) {
-                localStorage.setItem('token', data.token);
-                // Backend now returns user object with username and role
-                if (data.user) {
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                } else {
-                    // Fallback if user object not present
-                    localStorage.setItem('user', JSON.stringify({ username, role: 'customer' }));
-                }
-                navigate('/');
-            }
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    return (
-        <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-            <div className="glass-panel" style={{ padding: '3rem', width: '100%', maxWidth: '400px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>{isLogin ? 'Welcome Back' : 'Join Us'}</h2>
-                {error && <div style={{ color: '#ff7675', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="input-field"
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="input-field"
-                        required
-                    />
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-                        {isLogin ? 'Login' : 'Register'}
-                    </button>
-                </form>
-                <p style={{ textAlign: 'center', marginTop: '1.5rem', color: '#aaa' }}>
-                    {isLogin ? "Don't have an account? " : "Already have an account? "}
-                    <button onClick={() => setIsLogin(!isLogin)} style={{ background: 'none', color: 'var(--primary-color)', textDecoration: 'underline' }}>
-                        {isLogin ? 'Sign Up' : 'Login'}
-                    </button>
-                </p>
-            </div>
+  return (
+    <div className="auth-card card">
+      <h2>Sign in</h2>
+      <p className="muted">Access your account to manage products and cart.</p>
+      <form onSubmit={submit} className="stack">
+        <div className="form-row">
+          <input type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required/>
         </div>
-    );
-};
-
-export default Login;
+        <div className="form-row">
+          <input placeholder="Password" type="password" value={pw} onChange={e=>setPw(e.target.value)} required/>
+        </div>
+        <div className="row sp-between">
+          <span className="muted"></span>
+          <button className="btn btn-primary" type="submit">Login</button>
+        </div>
+      </form>
+    </div>
+  );
+}

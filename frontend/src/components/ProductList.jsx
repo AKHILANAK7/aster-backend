@@ -1,36 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { getProducts } from '../api';
-import ProductCard from './ProductCard';
+import React, {useEffect, useState, useContext} from "react";
+import api from "../api";
+import ProductCard from "./ProductCard";
+import { CartContext } from "../context/CartContext";
 
-const ProductList = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+export default function ProductList(){
+  const [products, setProducts] = useState([]);
+  const { addToCart } = useContext(CartContext);
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const data = await getProducts();
-                setProducts(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProducts();
-    }, []);
+  useEffect(()=>{
+    api.get("/api/products")
+      .then(res => setProducts(res.data))
+      .catch(err => console.error(err));
+  },[]);
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
-
-    return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
-            {products.map((product) => (
-                <ProductCard key={product._id} product={product} />
-            ))}
-        </div>
-    );
-};
-
-export default ProductList;
+  return (
+    <div className="stack">
+      <h2>Products</h2>
+      {products.length===0 && <div className="muted">No products yet</div>}
+      <div className="grid grid-3">
+        {products.map(p => <ProductCard key={p._id} p={p} onAdd={addToCart} />)}
+      </div>
+    </div>
+  );
+}
