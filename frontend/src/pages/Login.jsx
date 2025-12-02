@@ -11,11 +11,16 @@ export default function Login(){
     e.preventDefault();
     try {
       const res = await api.post("/api/auth/login", { email, password: pw });
-      const token = res.data.token;
+      const { token, user } = res.data;
       localStorage.setItem("token", token);
+      if (user) localStorage.setItem("user", JSON.stringify(user));
       setAuthToken(token);
       alert("Logged in");
-      nav("/admin");
+      if (user?.role === "admin") {
+        nav("/admin");
+      } else {
+        nav("/");
+      }
     } catch (err) {
       console.error(err);
       alert("Login failed: " + (err.response?.data || err.message));

@@ -5,8 +5,10 @@ import { setAuthToken } from "../api";
 export default function Navbar(){
   const nav = useNavigate();
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setAuthToken(null);
     window.location.href = "/login";
   };
@@ -19,7 +21,7 @@ export default function Navbar(){
           <Link to="/cart">Cart</Link>
           {token ? (
             <>
-              <Link to="/admin">Admin</Link>
+              {user?.role === "admin" && <Link to="/admin">Admin</Link>}
               <button className="btn btn-outline" onClick={logout}>Logout</button>
             </>
           ) : (

@@ -15,6 +15,13 @@ fun mountAuthRoutes(router: Router, mongo: MongoClient, jwt: io.vertx.ext.auth.j
 
         val email = body.getString("email")
         val password = body.getString("password")
+        val requestedRole = body.getString("role")?.lowercase()
+        val allowedRoles = setOf("admin", "customer")
+        val role = if (requestedRole != null && allowedRoles.contains(requestedRole)) {
+            requestedRole
+        } else {
+            "customer"
+        }
 
         if (email.isNullOrBlank() || password.isNullOrBlank()) {
             ctx.response().setStatusCode(400)
@@ -33,7 +40,7 @@ fun mountAuthRoutes(router: Router, mongo: MongoClient, jwt: io.vertx.ext.auth.j
             val userJson = JsonObject()
                 .put("email", email)
                 .put("password", hashed)
-                .put("role", "customer")
+                .put("role", role)
 
             mongo.insert(Collections.USERS, userJson) {
                 ctx.response().setStatusCode(201)

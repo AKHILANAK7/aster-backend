@@ -6,6 +6,7 @@ import Admin from "./pages/Admin";
 import Cart from "./pages/Cart";
 import Navbar from "./components/Navbar";
 import { setAuthToken } from "./api";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   const nav = useNavigate();
@@ -21,7 +22,14 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/cart" element={<Cart />} />
         </Routes>
       </div>
